@@ -37,6 +37,8 @@
         <FileName>XML/GameText.xml</FileName>
       </Action>
     </ModActions>
+    <Homepage>https://github.com/therefromhere/Civ5AntiquityIconsMod</Homepage>
+    <ModProperties />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Default' ">
     <OutputPath>.</OutputPath>
