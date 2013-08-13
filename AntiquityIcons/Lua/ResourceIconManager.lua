@@ -21,14 +21,14 @@ local g_gridWidth, _ = Map.GetGridSize();
 
 ------------------------------------------------------------------
 -- added by therefromhere
-local bShowAntiquityIcons = true;
+local bOnlyAntiquityIcons = false;
 
 LuaEvents.ToggleShowAntiquityIcons.Add(
 	function()
-		if (bShowAntiquityIcons) then
-			bShowAntiquityIcons = false;
+		if (bOnlyAntiquityIcons) then
+			bOnlyAntiquityIcons = false;
 		else
-			bShowAntiquityIcons = true;
+			bOnlyAntiquityIcons = true;
 		end
 
 		-- Reset the resource data.
@@ -87,10 +87,13 @@ function BuildResource( index, gridX, gridY, resourceType )
 										 										 
 	local resourceInfo = GameInfo.Resources[resourceType];
 
-	if (bShowAntiquityIcons and 
-		(resourceInfo.Type ~= 'RESOURCE_ARTIFACTS' and 
-		 resourceInfo.Type ~= 'RESOURCE_HIDDEN_ARTIFACTS')
-		) then
+	if (g_bHideResourceIcons or 
+		(
+			bOnlyAntiquityIcons and 
+			(resourceInfo.Type ~= 'RESOURCE_ARTIFACTS' and 
+			resourceInfo.Type ~= 'RESOURCE_HIDDEN_ARTIFACTS')
+		)
+	) then
 		DestroyResource(index);
 		return;
 	end
@@ -197,8 +200,7 @@ function OnRequestYieldDisplay( type )
     end
     
     if( not g_bIsStrategicView ) then
---        Controls.ResourceIconContainer:SetHide( g_bHideResourceIcons );
-		Controls.ResourceIconContainer:SetHide( g_bHideResourceIcons and bShowAntiquityIcons);
+        Controls.ResourceIconContainer:SetHide( g_bHideResourceIcons );
     end
 end
 Events.RequestYieldDisplay.Add( OnRequestYieldDisplay );
