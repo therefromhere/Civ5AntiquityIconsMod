@@ -6,6 +6,15 @@ local g_LegendIM = InstanceManager:new( "LegendKey", "Item", Controls.LegendStac
 local g_Overlays = GetStrategicViewOverlays();
 local g_IconModes = GetStrategicViewIconSettings();
 
+------------------------------------------------------------------
+-- added by therefromhere
+
+function OnShowOnlyAntiquityResourcesChecked(bIsChecked)
+	LuaEvents.ToggleShowAntiquityIcons();
+	Events.StrategicViewStateChanged();
+end
+Controls.ShowOnlyAntiquityResources:RegisterCheckHandler(OnShowOnlyAntiquityResourcesChecked);
+
 ----------------------------------------------------------------        
 ----------------------------------------------------------------        
 function OnMinimapInfo( uiHandle, width, height, paddingX )

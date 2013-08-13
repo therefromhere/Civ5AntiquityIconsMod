@@ -18,6 +18,36 @@ local g_ActiveSet = {};
 local g_PerPlayerResourceTables = {};
 
 local g_gridWidth, _ = Map.GetGridSize();
+
+------------------------------------------------------------------
+-- added by therefromhere
+local bShowAntiquityIcons = true;
+
+LuaEvents.ToggleShowAntiquityIcons.Add(
+	function()
+		if (bShowAntiquityIcons) then
+			bShowAntiquityIcons = false;
+		else
+			bShowAntiquityIcons = true;
+		end
+
+		-- Reset the resource data.
+		for index, pResource in pairs( g_ActiveSet ) do
+			DestroyResource( index );
+   		end
+
+		-- Rebuild with the current player's stored data.
+		local iActivePlayer = Game.GetActivePlayer();		
+		local playerResourceTable = g_PerPlayerResourceTables[ iActivePlayer ];
+		if (playerResourceTable ~= nil) then
+			for index, resource in pairs( playerResourceTable ) do
+				local gridX, gridY = GridFromIndex(index);
+				BuildResource( index, gridX, gridY, resource );
+   			end
+   		end
+	end
+);
+
 ------------------------------------------------------------------
 ------------------------------------------------------------------
 function IndexFromGrid( x, y )
@@ -44,7 +74,6 @@ end
 -------------------------------------------------
 -------------------------------------------------
 function BuildResource( index, gridX, gridY, resourceType )
-
 	DestroyResource(index);
 
 	local instance = g_ResourceManager:GetInstance();
@@ -57,6 +86,15 @@ function BuildResource( index, gridX, gridY, resourceType )
 										 z + g_ResourceIconOffsetZ );
 										 										 
 	local resourceInfo = GameInfo.Resources[resourceType];
+
+	if (bShowAntiquityIcons and 
+		(resourceInfo.Type ~= 'RESOURCE_ARTIFACTS' and 
+		 resourceInfo.Type ~= 'RESOURCE_HIDDEN_ARTIFACTS')
+		) then
+		DestroyResource(index);
+		return;
+	end
+
 	IconHookup(resourceInfo.PortraitIndex, 64, resourceInfo.IconAtlas, instance.ResourceIcon);
 	
 	-- Tool Tip
@@ -159,7 +197,8 @@ function OnRequestYieldDisplay( type )
     end
     
     if( not g_bIsStrategicView ) then
-        Controls.ResourceIconContainer:SetHide( g_bHideResourceIcons );
+--        Controls.ResourceIconContainer:SetHide( g_bHideResourceIcons );
+		Controls.ResourceIconContainer:SetHide( g_bHideResourceIcons and bShowAntiquityIcons);
     end
 end
 Events.RequestYieldDisplay.Add( OnRequestYieldDisplay );
